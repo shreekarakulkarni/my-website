@@ -1066,11 +1066,11 @@ body.de [data-de] { display: revert; }
         <div class="col-tag">Explore</div>
       </div>
 
-      <div class="collage-item col-4">
-        <img src="life4.jpg" alt="Public Speaking" onerror="this.parentElement.classList.add('col-placeholder'); this.style.display='none';">
-        <div class="col-label" data-en>Public Speaking</div>
-        <div class="col-label" data-de>Öffentlich sprechen</div>
-        <div class="col-tag">Lead</div>
+      <div class="collage-item col-4" style="position:relative;">
+        <img src="life4.jpg" alt="Just Being Me" onerror="this.parentElement.classList.add('col-placeholder'); this.style.display='none';" style="object-position: center top;">
+        <div class="col-label" data-en>Just Being Me</div>
+        <div class="col-label" data-de>Einfach ich selbst</div>
+        <div class="col-tag" style="background: var(--accent-sage);">Live</div>
       </div>
 
       <div class="collage-item col-5">
@@ -1188,47 +1188,61 @@ body.de [data-de] { display: revert; }
 </footer>
 
 <script>
-// ── Cursor ──────────────────────────────────────────────────────────────
+// ── Custom Cursor ─────────────────────────────────────────────────────────
 const cursor = document.getElementById('cursor');
 const ring   = document.getElementById('cursorRing');
 let mx = 0, my = 0, rx = 0, ry = 0;
 document.addEventListener('mousemove', e => {
   mx = e.clientX; my = e.clientY;
-  cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+  cursor.style.left = mx + 'px';
+  cursor.style.top  = my + 'px';
 });
 (function animRing() {
-  rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
-  ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px';
+  ring.style.top  = ry + 'px';
   requestAnimationFrame(animRing);
 })();
 document.querySelectorAll('a,button,.pillar,.thought-card,.collage-item').forEach(el => {
-  el.addEventListener('mouseenter', () => { ring.style.width='48px'; ring.style.height='48px'; ring.style.opacity='0.8'; });
-  el.addEventListener('mouseleave', () => { ring.style.width='32px'; ring.style.height='32px'; ring.style.opacity='0.5'; });
+  el.addEventListener('mouseenter', () => {
+    ring.style.width   = '48px';
+    ring.style.height  = '48px';
+    ring.style.opacity = '0.8';
+  });
+  el.addEventListener('mouseleave', () => {
+    ring.style.width   = '32px';
+    ring.style.height  = '32px';
+    ring.style.opacity = '0.5';
+  });
 });
 
-// ── Language toggle ──────────────────────────────────────────────────────
+// ── Language Toggle ───────────────────────────────────────────────────────
 function setLang(lang) {
   document.body.classList.toggle('de', lang === 'de');
   document.getElementById('btnEN').classList.toggle('active', lang === 'en');
   document.getElementById('btnDE').classList.toggle('active', lang === 'de');
 }
 
-// ── Scroll fade-in ───────────────────────────────────────────────────────
+// ── Scroll Fade-In ────────────────────────────────────────────────────────
 const obs = new IntersectionObserver((entries) => {
   entries.forEach((e, i) => {
-    if (e.isIntersecting) setTimeout(() => e.target.classList.add('visible'), i * 80);
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+    }
   });
 }, { threshold: 0.08 });
 document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
 
-// ── Animated stat counters ───────────────────────────────────────────────
+// ── Animated Stat Counters ────────────────────────────────────────────────
 function animateCounter(el, target, suffix, duration) {
-  let start = 0;
+  let start = null;
   const step = (timestamp) => {
     if (!start) start = timestamp;
     const progress = Math.min((timestamp - start) / duration, 1);
-    const eased = 1 - Math.pow(1 - progress, 3);
-    el.textContent = (suffix === '%' ? '+' : '') + Math.floor(eased * target) + suffix;
+    const eased    = 1 - Math.pow(1 - progress, 3);
+    const prefix   = suffix === '%' ? '+' : '';
+    el.textContent = prefix + Math.floor(eased * target) + suffix;
     if (progress < 1) requestAnimationFrame(step);
   };
   requestAnimationFrame(step);
@@ -1236,7 +1250,7 @@ function animateCounter(el, target, suffix, duration) {
 const counterObs = new IntersectionObserver((entries) => {
   entries.forEach(e => {
     if (e.isIntersecting) {
-      const el = e.target;
+      const el     = e.target;
       const target = parseInt(el.dataset.target);
       const suffix = el.dataset.suffix || '';
       animateCounter(el, target, suffix, 1800);
@@ -1246,7 +1260,7 @@ const counterObs = new IntersectionObserver((entries) => {
 }, { threshold: 0.5 });
 document.querySelectorAll('.stat-number[data-target]').forEach(el => counterObs.observe(el));
 
-// ── Skills gamification: XP bars ─────────────────────────────────────────
+// ── XP Skill Bars ─────────────────────────────────────────────────────────
 const xpObs = new IntersectionObserver((entries) => {
   entries.forEach(e => {
     if (e.isIntersecting) {
@@ -1261,12 +1275,12 @@ const xpObs = new IntersectionObserver((entries) => {
 }, { threshold: 0.2 });
 document.querySelectorAll('.xp-group').forEach(el => xpObs.observe(el));
 
-// ── Collage tilt on mouse move ────────────────────────────────────────────
+// ── Collage 3D Tilt ───────────────────────────────────────────────────────
 document.querySelectorAll('.collage-item').forEach(item => {
   item.addEventListener('mousemove', e => {
     const rect = item.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width - 0.5;
-    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    const x    = (e.clientX - rect.left)  / rect.width  - 0.5;
+    const y    = (e.clientY - rect.top)   / rect.height - 0.5;
     item.style.transform = `perspective(600px) rotateY(${x * 6}deg) rotateX(${-y * 6}deg) scale(1.02)`;
   });
   item.addEventListener('mouseleave', () => {
@@ -1274,7 +1288,7 @@ document.querySelectorAll('.collage-item').forEach(item => {
   });
 });
 
-// ── Fun fact ticker ───────────────────────────────────────────────────────
+// ── Fun Fact Ticker ───────────────────────────────────────────────────────
 const facts = [
   "Shreekara has trekked in 3 different mountain ranges.",
   "Studio Prano has delivered 40+ projects across 2 countries.",
@@ -1286,12 +1300,12 @@ const ticker = document.getElementById('funTicker');
 if (ticker) {
   let fi = 0;
   function rotateFact() {
-    ticker.style.opacity = '0';
+    ticker.style.opacity   = '0';
     ticker.style.transform = 'translateY(8px)';
     setTimeout(() => {
       fi = (fi + 1) % facts.length;
-      ticker.textContent = facts[fi];
-      ticker.style.opacity = '1';
+      ticker.textContent     = facts[fi];
+      ticker.style.opacity   = '1';
       ticker.style.transform = 'translateY(0)';
     }, 400);
   }
